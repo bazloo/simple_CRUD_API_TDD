@@ -7,7 +7,7 @@
     "start": "node build/index.js",
     "build": "npm run clean && tsc",
     "clean": "rimraf build",
-    "test": "jest"
+    "test": "jest --watchAll"
   },
   "repository": {
     "type": "git",
