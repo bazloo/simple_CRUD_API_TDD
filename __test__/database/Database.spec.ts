@@ -1,5 +1,12 @@
-import Database from "../../src/database/Database";
-import User from "../../src/database/User";
+import Database from '../../src/database/Database';
+import Model from "../../src/database/Model";
+
+interface IUser {
+  id?: string | number;
+  userName: string;
+  age: number;
+  hobbies: string[] | [];
+}
 
 const testUser = {
   id: 1,
@@ -8,11 +15,13 @@ const testUser = {
   hobbies: ['coding'],
 };
 
-let userCollection: User;
-let db: Database;
+let userCollection;
+let db;
+
 beforeAll(() => {
-  userCollection = new User();
-  db = new Database(userCollection);
+  const store = {};
+  userCollection = new Model<IUser>('users', store);
+  db = new Database([userCollection], store);
 });
 
 beforeEach(async () => {
@@ -35,7 +44,7 @@ describe('in memory DB operations', () => {
     expect(user).toBeTruthy();
     expect(user.id).toEqual(1);
     expect(user.userName).toBe('test-user');
-    expect(user.age).toEqual(1);
+    expect(user.age).toEqual(2023);
     expect(user.hobbies).toContain('coding');
   });
 

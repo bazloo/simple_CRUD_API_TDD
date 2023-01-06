@@ -1,0 +1,4 @@
+// import interface DB {
+//     store: [];
+//
+// };
