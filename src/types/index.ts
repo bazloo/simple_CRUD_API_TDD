@@ -5,9 +5,8 @@ export interface UserModel {
     hobbies: string[] | [];
 }
 
-export interface BaseDocument extends Record<string, unknown>{
+export interface BaseDocument {
  id?: string | number;
- [key: string]: unknown;
 }
 
 export interface BaseCollection {
