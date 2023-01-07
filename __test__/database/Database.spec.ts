@@ -1,14 +1,8 @@
 import Database from '../../src/database/Database';
-import Model from "../../src/database/Model";
+import Model from '../../src/database/Model';
+import { UserModel } from '../../src/types';
 
-interface IUser {
-  id?: string | number;
-  userName: string;
-  age: number;
-  hobbies: string[] | [];
-}
-
-const testUser = {
+const testUser: UserModel = {
   id: 1,
   userName: 'test-user',
   age: 2023,
@@ -20,7 +14,7 @@ let db;
 
 beforeAll(() => {
   const store = {};
-  userCollection = new Model<IUser>('users', store);
+  userCollection = new Model<UserModel>('users', store);
   db = new Database([userCollection], store);
 });
 

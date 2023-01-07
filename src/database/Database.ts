@@ -1,14 +1,11 @@
-interface ICollection {
-  collectionName: string;
-  store: [];
-}
+import { BaseCollection, BaseDocument } from "../types";
 
 export default class Database {
-  private store;
+  private store: Record<string, Array<BaseDocument>>;
 
   private collections: Array<string> = [];
 
-  constructor(collections: ICollection[], store: object) {
+  constructor(collections: BaseCollection[], store: Record<string, Array<BaseDocument>>) {
     this.store = store;
 
     collections.forEach((oneCollection): void => {

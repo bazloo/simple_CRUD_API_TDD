@@ -1,9 +1,11 @@
-export default class Model<T extends { id?: string | number }> {
+import { BaseDocument } from "../types";
+
+export default class Model<T extends BaseDocument> {
   public collectionName: string;
 
-  private store: object;
+  private store: Record<string, Array<T>>;
 
-  constructor(collectionName: string, store: object) {
+  constructor(collectionName: string, store: Record<string, Array<T>>) {
     this.collectionName = collectionName;
     this.store = store;
 
@@ -25,17 +27,17 @@ export default class Model<T extends { id?: string | number }> {
     });
   }
 
-  find(object: {[key: string | number]: string | number}): Promise<T> {
+  find(query: Partial<T>): Promise<Array<T>> {
     return new Promise((resolve) => {
-      const query = Object.entries(object);
+      const queryValues = Object.entries(query);
       const result = this.store[this.collectionName]
-        .filter((record) => query.every(([key, value]) => record[key] === value));
+        .filter((document) => queryValues.every(([key, value]) => document[key] === value));
 
       resolve(result);
     });
   }
 
-  delete(object: { id: string | number }): Promise<T> {
+  delete(object: BaseDocument): Promise<T> {
     return new Promise((resolve, reject) => {
       const index = this.store[this.collectionName]
         .findIndex((record) => record.id === object.id);
@@ -51,9 +53,8 @@ export default class Model<T extends { id?: string | number }> {
     });
   }
 
-  update(object: { id: string | number }, query: {[key: string | number]: string | number}): Promise<T> {
+  update(object: BaseDocument, query: Partial<T>): Promise<T> {
     return new Promise((resolve, reject) => {
-      console.log(this.store[this.collectionName]);
 
       const index = this.store[this.collectionName]
         .findIndex((record) => record.id === object.id);
