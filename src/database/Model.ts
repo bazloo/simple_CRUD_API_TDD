@@ -1,5 +1,7 @@
 import { BaseDocument } from "../types";
 
+// TODO fields type validating
+
 export default class Model<T extends BaseDocument> {
   public collectionName: string;
 
@@ -21,7 +23,7 @@ export default class Model<T extends BaseDocument> {
       if (alreadyExist) {
         reject(new Error('Document with such id is already exist'));
       } else {
-        this.store[this.collectionName].push(object);
+        this.store[this.collectionName].push({ ...object });
         resolve(object);
       }
     });
@@ -53,15 +55,22 @@ export default class Model<T extends BaseDocument> {
     });
   }
 
-  update(object: BaseDocument, query: Partial<T>): Promise<T> {
+  update({ id }: BaseDocument, newValues: Partial<T>): Promise<T> {
     return new Promise((resolve, reject) => {
 
+      if (Reflect.has(newValues, 'id')) {
+        delete newValues.id;
+      }
+
       const index = this.store[this.collectionName]
-        .findIndex((record) => record.id === object.id);
+        .findIndex((record) => record.id === id);
 
       if (index !== -1) {
-        Object.entries(query).forEach(([key, value]) => {
-          this.store[this.collectionName][index][key] = value;
+        Object.entries(newValues).forEach(([key, value]) => {
+          const document = { ...this.store[this.collectionName][index] };
+          document[key] = value;
+
+          this.store[this.collectionName][index] = document;
         });
 
         resolve(this.store[this.collectionName][index]);

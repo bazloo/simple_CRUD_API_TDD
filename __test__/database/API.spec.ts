@@ -1,9 +1,9 @@
 import request from 'supertest';
-import app from '../../src/app';
+import server from '../../src/server';
 
 describe('users API', () => {
   it('gets all users', (done) => {
-    request(app).get('/api/users').send().then((res) => {
+    request(server).get('/api/users').send().then((res) => {
       console.log(res.body);
       const { users } = res.body;
 
@@ -15,29 +15,36 @@ describe('users API', () => {
   });
 
   it('creates user', (done) => {
-    request(app).post('/api/users').send().then((res) => {
+    request(server).post('/api/users').send().then((res) => {
       expect(res.status).toBe(200);
       done();
     });
   });
 
   it('gets user by id', (done) => {
-    request(app).get('/api/users').send().then((res) => {
+    request(server).get('/api/users').send().then((res) => {
       expect(res.status).toBe(200);
       done();
     });
   });
 
   it('updates user', (done) => {
-    request(app).put('/api/users').send().then((res) => {
+    request(server).put('/api/users').send().then((res) => {
       expect(res.status).toBe(200);
       done();
     });
   });
 
   it('deletes user', (done) => {
-    request(app).delete('/api/users').send().then((res) => {
+    request(server).delete('/api/users').send().then((res) => {
       expect(res.status).toBe(200);
+      done();
+    });
+  });
+
+  it('non exist route', (done) => {
+    request(server).get('/api/nonsense').send().then((res) => {
+      expect(res.status).toBe(404);
       done();
     });
   });
