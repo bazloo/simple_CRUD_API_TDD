@@ -1,16 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import url from 'node:url';
-import { Routes } from '../types/index';
-
-const ROUTES: Routes = {
-  'api/users': {
-    get: () => { console.log('notExist'); },
-    post: () => { console.log('notExist'); },
-    put: () => { console.log('notExist'); },
-    delete: () => { console.log('notExist'); },
-  },
-  notExist: () => { console.log('notExist'); },
-};
+import routes from '../routes';
 
 export default function requestHandler(req: IncomingMessage, res: ServerResponse) {
   // parse url string
@@ -22,9 +12,9 @@ export default function requestHandler(req: IncomingMessage, res: ServerResponse
   route = route.replace(/^\/+|\/+$/g, '');
 
   // maybe check url first
-  if (!ROUTES.path) {
+  if (!routes[route]) {
     // TODO set 404 status
-    return ROUTES.notExist(req, res);
+    return routes.notExist(req, res);
   }
 
   // maybe set common headers to res obj
@@ -35,6 +25,8 @@ export default function requestHandler(req: IncomingMessage, res: ServerResponse
   // invoke route
   switch (req.method?.toLowerCase()) {
     case 'get':
+      // @ts-ignore
+      routes[route].get(req, res);
       break;
     case 'post':
       break;
@@ -44,7 +36,7 @@ export default function requestHandler(req: IncomingMessage, res: ServerResponse
       break;
     default:
       // TODO set 500 status
-      return ROUTES.notExist(req, res);
+      return routes.notExist(req, res);
   }
   return '';
 }

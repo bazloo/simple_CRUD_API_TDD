@@ -13,7 +13,7 @@ export interface BaseDocument {
 
 export interface BaseCollection {
     collectionName: string;
-    store: [];
+    store: object;
 }
 
 enum RequestMethods {

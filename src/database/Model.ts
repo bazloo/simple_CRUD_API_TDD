@@ -1,11 +1,11 @@
-import { BaseDocument } from "../types";
+import { BaseDocument } from '../types';
 
 // TODO fields type validating
 
 export default class Model<T extends BaseDocument> {
   public collectionName: string;
 
-  private store: Record<string, Array<T>>;
+  store: Record<string, Array<T>>;
 
   constructor(collectionName: string, store: Record<string, Array<T>>) {
     this.collectionName = collectionName;
@@ -16,7 +16,6 @@ export default class Model<T extends BaseDocument> {
 
   async insert(object: T): Promise<T> {
     return new Promise((resolve, reject) => {
-
       const [alreadyExist] = this.store[this.collectionName]
         .filter((record) => record.id === object.id); // TODO refactor find by id private
 
@@ -55,28 +54,34 @@ export default class Model<T extends BaseDocument> {
     });
   }
 
-  update({ id }: BaseDocument, newValues: Partial<T>): Promise<T> {
+  update(query: BaseDocument, newValues: Partial<T>): Promise<T> {
     return new Promise((resolve, reject) => {
-
+      let availableValues; // TODO expand validation
       if (Reflect.has(newValues, 'id')) {
-        delete newValues.id;
+        const { id, ...values } = newValues;
+        availableValues = values;
+      } else {
+        availableValues = newValues;
       }
 
       const index = this.store[this.collectionName]
-        .findIndex((record) => record.id === id);
+        .findIndex((record) => record.id === query.id);
 
       if (index !== -1) {
-        Object.entries(newValues).forEach(([key, value]) => {
-          const document = { ...this.store[this.collectionName][index] };
-          document[key] = value;
-
-          this.store[this.collectionName][index] = document;
-        });
-
+        this.store[this.collectionName][index] = Object.assign(
+          this.store[this.collectionName][index],
+          availableValues,
+        );
         resolve(this.store[this.collectionName][index]);
       } else {
         reject(new Error('Document with such id does not exist'));
       }
+    });
+  }
+
+  findAll() {
+    return new Promise((resolve, reject) => {
+      resolve(this.store[this.collectionName]);
     });
   }
 }

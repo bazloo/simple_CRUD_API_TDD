@@ -2,13 +2,13 @@ import request from 'supertest';
 import server from '../../src/server';
 
 describe('users API', () => {
-  it('gets all users', (done) => {
+  it('gets empty array', (done) => {
     request(server).get('/api/users').send().then((res) => {
       console.log(res.body);
       const { users } = res.body;
 
       expect(users).toBeTruthy();
-      expect(users.length).toBeGreaterThan(0);
+      expect(users.length).toEqual(0);
       expect(res.status).toBe(200);
       done();
     });
