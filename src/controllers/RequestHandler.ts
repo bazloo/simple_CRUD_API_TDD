@@ -1,8 +1,9 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import url from 'node:url';
 import routes from '../routes';
+import bodyParser from "../utils/bodyParser";
 
-export default function requestHandler(req: IncomingMessage, res: ServerResponse) {
+export default async function requestHandler(req: IncomingMessage & { body?: string }, res: ServerResponse) {
   // parse url string
   let parsedUrl;
   if (req.url) {
@@ -29,10 +30,17 @@ export default function requestHandler(req: IncomingMessage, res: ServerResponse
       routes[route].get(req, res);
       break;
     case 'post':
+      req.body = await bodyParser(req) as string;
+      // @ts-ignore
+      routes[route].post(req, res);
       break;
     case 'put':
+      // @ts-ignore
+      routes[route].put(req, res);
       break;
     case 'delete':
+      // @ts-ignore
+      routes[route].delete(req, res);
       break;
     default:
       // TODO set 500 status

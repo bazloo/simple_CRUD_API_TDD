@@ -1,21 +1,26 @@
 import request from 'supertest';
-import server from '../../src/server';
+import server from '../../../src/server';
+import { UserModel } from "../../../build/types";
+
+const testUser: UserModel = {
+  id: 1,
+  userName: 'test-user',
+  age: 2023,
+  hobbies: ['coding'],
+};
 
 describe('users API', () => {
   it('gets empty array', (done) => {
     request(server).get('/api/users').send().then((res) => {
-      console.log(res.body);
-      const { users } = res.body;
-
-      expect(users).toBeTruthy();
-      expect(users.length).toEqual(0);
+      expect(res.body).toBeTruthy();
+      expect(res.body.length).toEqual(0);
       expect(res.status).toBe(200);
       done();
     });
   });
 
   it('creates user', (done) => {
-    request(server).post('/api/users').send().then((res) => {
+    request(server).post('/api/users').send(testUser).then((res) => {
       expect(res.status).toBe(200);
       done();
     });

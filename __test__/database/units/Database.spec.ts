@@ -1,6 +1,6 @@
-import Database from '../../src/database/Database';
-import Model from '../../src/database/Model';
-import { UserModel } from '../../src/types';
+import Database from '../../../src/database/Database';
+import Model from '../../../src/database/Model';
+import { UserModel } from '../../../src/types';
 
 const testUser: UserModel = {
   id: 1,
