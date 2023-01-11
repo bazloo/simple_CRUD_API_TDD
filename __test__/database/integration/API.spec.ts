@@ -1,13 +1,17 @@
 import request from 'supertest';
 import server from '../../../src/server';
-import { UserModel } from "../../../build/types";
+import { UserModel as UserSchema } from "../../../build/types";
+import UserModel, { db } from '../../../src/database/index';
 
-const testUser: UserModel = {
+const testUser: UserSchema = {
   id: 1,
   userName: 'test-user',
   age: 2023,
   hobbies: ['coding'],
 };
+beforeEach(async () => {
+  await db.dropCollections();
+});
 
 describe('users API', () => {
   it('gets empty array', (done) => {
@@ -27,9 +31,11 @@ describe('users API', () => {
   });
 
   it('gets user by id', (done) => {
-    request(server).get('/api/users').send().then((res) => {
-      expect(res.status).toBe(200);
-      done();
+    UserModel.insert(testUser).then(() => {
+      request(server).get('/api/users/2').send().then((res) => {
+        expect(res.status).toBe(200);
+        done();
+      });
     });
   });
 

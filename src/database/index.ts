@@ -1,11 +1,9 @@
 import Model from './Model';
 import Database from './Database';
-import { UserModel } from '../types';
+import { UserModel as UserSchema } from '../types';
 
 const store = {};
-const userCollection = new Model('users', store);
+const UserModel = new Model<UserSchema>('users', store);
+export const db = new Database([UserModel], store);
 
-// eslint-disable-next-line import/prefer-default-export
-const db = new Database([userCollection], store);
-
-export default db;
+export default UserModel;

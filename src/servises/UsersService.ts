@@ -1,15 +1,37 @@
-import db from '../database/';
+import UserModel from '../database';
 
 export default class UsersService {
   static async get(req, res) {
-    // @ts-ignore
-    const users = await db.users.findAll();
-    res.write(JSON.stringify(users));
-    res.end();
+    let users;
+    console.log('req.params.id', req.params.id);
+    if (req.params.id) {
+      users = await UserModel.find({ id: req.params.id }); //TODO change status ?
+      res.write(JSON.stringify(users));
+      res.end();
+    } else {
+      users = await UserModel.findAll();
+      res.write(JSON.stringify(users));
+      res.end();
+    }
   }
 
-  static post(req, res) {
-    console.log(req.body);
+  static async post(req, res) {
+    // make validation
+
+    if (!req.body) {
+      res.end();
+    }
+
+    let newUser;
+    try {
+      newUser = await UserModel.insert(req.body);
+    } catch (e) {
+      res.statusCode = 500;
+      res.end();
+    }
+
+    res.write(JSON.stringify(newUser));
+    res.end();
   }
 
   static put(req, res) {}

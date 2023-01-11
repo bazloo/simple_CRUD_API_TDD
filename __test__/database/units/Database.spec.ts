@@ -1,22 +1,12 @@
-import Database from '../../../src/database/Database';
-import Model from '../../../src/database/Model';
-import { UserModel } from '../../../src/types';
+import UserModel, { db } from '../../../src/database/index';
+import { UserModel as UserSchema } from '../../../src/types/index'
 
-const testUser: UserModel = {
+const testUser: UserSchema = {
   id: 1,
   userName: 'test-user',
   age: 2023,
   hobbies: ['coding'],
 };
-
-let userCollection;
-let db;
-
-beforeAll(() => {
-  const store = {};
-  userCollection = new Model<UserModel>('users', store);
-  db = new Database([userCollection], store);
-});
 
 beforeEach(async () => {
   await db.dropCollections();
@@ -24,16 +14,16 @@ beforeEach(async () => {
 
 describe('in memory DB operations', () => {
   it('finds object', async () => {
-    await db.users.insert(testUser);
-    const [user] = await db.users.find({ id: 1 });
+    await UserModel.insert(testUser);
+    const [user] = await UserModel.find({ id: 1 });
 
     expect(user).toBeTruthy();
     expect(user.id).toBe(1);
   });
 
   it('inserts object', async () => {
-    await db.users.insert(testUser);
-    const [user] = await db.users.find({ id: 1 });
+    await UserModel.insert(testUser);
+    const [user] = await UserModel.find({ id: 1 });
 
     expect(user).toBeTruthy();
     expect(user.id).toEqual(1);
@@ -43,38 +33,38 @@ describe('in memory DB operations', () => {
   });
 
   it('deletes object', async () => {
-    await db.users.insert(testUser);
-    await db.users.delete({ id: 1 });
+    await UserModel.insert(testUser);
+    await UserModel.delete({ id: 1 });
 
-    const [user] = await db.users.find({ id: 1 });
+    const [user] = await UserModel.find({ id: 1 });
 
     expect(user).toBeFalsy();
   });
 
   it('updates object', async () => {
-    await db.users.insert(testUser);
-    await db.users.update({ id: 1 }, { userName: 'test1' });
+    await UserModel.insert(testUser);
+    await UserModel.update({ id: 1 }, { userName: 'test1' });
 
-    const [user] = await db.users.find({ id: 1 });
+    const [user] = await UserModel.find({ id: 1 });
 
     expect(user.userName).toBe('test1');
   });
 
   it('can not update id field', async () => {
-    const newUser = await db.users.insert(testUser);
+    const newUser = await UserModel.insert(testUser);
 
-    await db.users.update({ id: 1 }, { id: 2 });
+    await UserModel.update({ id: 1 }, { id: 2 });
 
-    const [user] = await db.users.find({ id: 2 });
+    const [user] = await UserModel.find({ id: 2 });
 
     expect(user).toBeFalsy();
   });
 
   it('updates all fields except id', async () => {
-    await db.users.insert(testUser);
-    await db.users.update({ id: 1 }, { id: 2, userName: 'test1', age: 0 });
+    await UserModel.insert(testUser);
+    await UserModel.update({ id: 1 }, { id: 2, userName: 'test1', age: 0 });
 
-    const [user] = await db.users.find({ id: 1 });
+    const [user] = await UserModel.find({ id: 1 });
 
     expect(user.userName).toBe('test1');
     expect(user.age).toBe(0);
