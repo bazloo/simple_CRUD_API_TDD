@@ -8,7 +8,10 @@ const routes: Routes = {
     put: (req, res) => UsersService.put(req, res),
     delete: (req, res) => UsersService.delete(req, res),
   },
-  notExist: (req, res) => { console.log('notExist'); },
+  notExist: (req, res) => {
+    res.statusCode = 404;
+    res.end();
+  },
 };
 
 export default routes;

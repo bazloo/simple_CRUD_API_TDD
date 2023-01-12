@@ -1,5 +1,5 @@
-import UserModel, { db } from '../../../src/database/index';
-import { UserModel as UserSchema } from '../../../src/types/index'
+import UserModel, { db } from '../../src/database';
+import { UserModel as UserSchema } from '../../src/types';
 
 const testUser: UserSchema = {
   id: 1,

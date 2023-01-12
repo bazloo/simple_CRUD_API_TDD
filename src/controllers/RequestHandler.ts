@@ -49,6 +49,7 @@ export default async function requestHandler(req: IncomingMessage & { body?: str
       routes[possibleRoutes[0]].post(req, res);
       break;
     case 'put':
+      req.body = await bodyParser(req) as string;
       // @ts-ignore
       routes[possibleRoutes[0]].put(req, res);
       break;

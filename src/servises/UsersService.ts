@@ -3,9 +3,9 @@ import UserModel from '../database';
 export default class UsersService {
   static async get(req, res) {
     let users;
-    console.log('req.params.id', req.params.id);
+
     if (req.params.id) {
-      users = await UserModel.find({ id: req.params.id }); //TODO change status ?
+      users = await UserModel.find({ id: req.params.id });
       res.write(JSON.stringify(users));
       res.end();
     } else {
@@ -16,7 +16,7 @@ export default class UsersService {
   }
 
   static async post(req, res) {
-    // make validation
+    //TODO make validation
 
     if (!req.body) {
       res.end();
@@ -34,7 +34,30 @@ export default class UsersService {
     res.end();
   }
 
-  static put(req, res) {}
+  static async put(req, res) {
+    if (!req.body || !req.params.id) {
+      res.end();
+    }
 
-  static delete(req, res) {}
+    let updatedUser;
+    try {
+      updatedUser = await UserModel.update({ id: req.params.id }, req.body);
+    } catch (e) {
+      res.statusCode = 500;
+      res.end();
+    }
+
+    res.write(JSON.stringify(updatedUser));
+    res.end();
+  }
+
+  static async delete(req, res) {
+    if (!req.params.id) {
+      res.end();
+    }
+
+    const deletedUser = await UserModel.delete({ id: req.params.id });
+    res.write(JSON.stringify(deletedUser));
+    res.end();
+  }
 }

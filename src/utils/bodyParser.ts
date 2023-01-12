@@ -5,7 +5,9 @@ export default function bodyParser(req:IncomingMessage) {
     const chunks: Buffer[] = [];
 
     req.on('data', (chunk: Buffer) => {
-      chunks.push(chunk);
+      if (chunk) {
+        chunks.push(chunk);
+      }
     });
 
     req.on('end', () => {

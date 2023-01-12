@@ -33,7 +33,6 @@ export default class Model<T extends BaseDocument> {
       const queryValues = Object.entries(query);
       const result = this.store[this.collectionName]
         .filter((document) => queryValues.every(([key, value]) => document[key] === value));
-
       resolve(result);
     });
   }
@@ -54,7 +53,7 @@ export default class Model<T extends BaseDocument> {
     });
   }
 
-  update(query: BaseDocument, newValues: Partial<T>): Promise<T> {
+  update(query: BaseDocument, newValues: Partial<T>): Promise<T> { // TODO: fix type required
     return new Promise((resolve, reject) => {
       let availableValues; // TODO expand validation
       if (Reflect.has(newValues, 'id')) {
