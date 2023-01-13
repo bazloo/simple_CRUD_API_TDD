@@ -1,8 +1,8 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
 export interface UserModel {
-    id?: string | number;
-    userName: string;
+    id?: string;
+    username: string;
     age: number;
     hobbies: string[] | [];
 }
@@ -13,6 +13,7 @@ export interface BaseDocument {
 
 export interface BaseCollection {
     collectionName: string;
+    collectionSchema: { required: Array<string>, types: Record<string, any> },
     store: object;
 }
 

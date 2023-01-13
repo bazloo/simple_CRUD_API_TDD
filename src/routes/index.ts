@@ -1,5 +1,5 @@
 import { Routes } from '../types/index';
-import UsersService from "../servises/UsersService";
+import UsersService from '../servises/UsersService';
 
 const routes: Routes = {
   'api/users': {

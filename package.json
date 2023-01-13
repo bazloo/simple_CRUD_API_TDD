@@ -34,6 +34,7 @@
   "dependencies": {
     "@types/supertest": "^2.0.12",
     "body-parser": "^1.20.1",
-    "supertest": "^6.3.3"
+    "supertest": "^6.3.3",
+    "uuid": "^9.0.0"
   }
 }

@@ -3,14 +3,13 @@ import server from '../../src/server';
 import UserModel, { db } from '../../src/database';
 
 const testUser = {
-  id: '1',
-  userName: 'test-user',
+  username: 'test-user',
   age: 2023,
   hobbies: ['coding'],
 };
 
 const updatedUser = {
-  userName: 'yang user',
+  username: 'yang user',
   age: 18,
   hobbies: ['gaming'],
 };
@@ -37,18 +36,18 @@ describe('users API', () => {
   });
 
   it('gets user by id', (done) => {
-    UserModel.insert(testUser).then(() => {
-      request(server).get('/api/users/1').send().then((res) => {
+    UserModel.insert(testUser).then((user) => {
+      request(server).get(`/api/users/${user.id}`).send().then((res) => {
         expect(res.status).toBe(200);
-        expect(res.body[0].id).toBe('1');
+        expect(res.body[0].id).toBe(user.id);
         done();
       });
     });
   });
 
   it('gets not exist user', (done) => {
-    UserModel.insert(testUser).then(() => {
-      request(server).get('/api/users/2').send().then((res) => {
+    UserModel.insert(testUser).then((user) => {
+      request(server).get(`/api/users/${user.id}`).send().then((res) => {
         expect(res.status).toBe(200);
         expect(res.body.length).toBeFalsy();
         done();
@@ -57,11 +56,11 @@ describe('users API', () => {
   });
 
   it('updates user', (done) => {
-    UserModel.insert(testUser).then(() => {
-      request(server).put('/api/users/1').send(updatedUser).then((res) => {
+    UserModel.insert(testUser).then((user) => {
+      request(server).put(`/api/users/${user.id}`).send(updatedUser).then((res) => {
         const updated = res.body;
         expect(res.status).toBe(200);
-        expect(updated.userName).toBe(updatedUser.userName);
+        expect(updated.username).toBe(updatedUser.username);
         expect(updated.age).toBe(updatedUser.age);
         expect(updated.hobbies).toStrictEqual(updatedUser.hobbies);
         done();
@@ -70,11 +69,11 @@ describe('users API', () => {
   });
 
   it('deletes user', (done) => {
-    UserModel.insert(testUser).then(() => {
-      request(server).delete('/api/users/1').send()
+    UserModel.insert(testUser).then((user) => {
+      request(server).delete(`/api/users/${user.id}`).send()
         .then((res) => {
           expect(res.status).toBe(200);
-          return UserModel.find({ id: '1' });
+          return UserModel.find({ id: user.id });
         })
         .then((user) => {
           expect(user.length).toBeFalsy();

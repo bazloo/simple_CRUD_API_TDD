@@ -1,9 +1,11 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import url from 'node:url';
 import routes from '../routes';
-import bodyParser from '../utils/bodyParser';
+import { bodyParser, setDefaultHeaders, schemaValidator } from '../utils';
+import { UserModel as UserSchema } from '../types';
+import { userRequired, userFieldsTypes as userSchema } from '../database';
 
-export default async function requestHandler(req: IncomingMessage & { body?: string; params?: object }, res: ServerResponse) {
+export default async function requestHandler(req: IncomingMessage & { body?: UserSchema; params?: object }, res: ServerResponse) {
   // parse url string
   let parsedUrl;
   if (req.url) {
@@ -32,9 +34,7 @@ export default async function requestHandler(req: IncomingMessage & { body?: str
 
   req.params = { id: possibleUrlParam };
 
-  // maybe set common headers to res obj
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  setDefaultHeaders(res);
 
   // switch case depends on method
   // invoke route
@@ -44,12 +44,19 @@ export default async function requestHandler(req: IncomingMessage & { body?: str
       routes[possibleRoutes[0]].get(req, res);
       break;
     case 'post':
-      req.body = await bodyParser(req) as string;
+      req.body = await bodyParser(req) as UserSchema;
+      try {
+        schemaValidator<UserSchema, typeof userSchema>(userRequired, userSchema, req.body);
+      } catch (e) {
+        console.log(e);
+        res.statusCode = 400;
+        res.end();
+      }
       // @ts-ignore
       routes[possibleRoutes[0]].post(req, res);
       break;
     case 'put':
-      req.body = await bodyParser(req) as string;
+      req.body = await bodyParser(req) as UserSchema;
       // @ts-ignore
       routes[possibleRoutes[0]].put(req, res);
       break;

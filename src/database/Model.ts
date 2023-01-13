@@ -1,14 +1,19 @@
+import { v4 as uuid } from 'uuid';
 import { BaseDocument } from '../types';
+import { schemaValidator } from "../utils";
 
 // TODO fields type validating
 
 export default class Model<T extends BaseDocument> {
   public collectionName: string;
 
+  private collectionSchema: { required: Array<keyof T>; types: T };
+
   store: Record<string, Array<T>>;
 
-  constructor(collectionName: string, store: Record<string, Array<T>>) {
+  constructor(collectionName: string, collectionSchema, store: Record<string, Array<T>>) {
     this.collectionName = collectionName;
+    this.collectionSchema = collectionSchema;
     this.store = store;
 
     this.store[collectionName] = [];
@@ -16,15 +21,10 @@ export default class Model<T extends BaseDocument> {
 
   async insert(object: T): Promise<T> {
     return new Promise((resolve, reject) => {
-      const [alreadyExist] = this.store[this.collectionName]
-        .filter((record) => record.id === object.id); // TODO refactor find by id private
-
-      if (alreadyExist) {
-        reject(new Error('Document with such id is already exist'));
-      } else {
-        this.store[this.collectionName].push({ ...object });
-        resolve(object);
-      }
+      schemaValidator(this.collectionSchema.required, this.collectionSchema.types, object);
+      object.id = uuid();
+      this.store[this.collectionName].push({ ...object });
+      resolve(object);
     });
   }
 
