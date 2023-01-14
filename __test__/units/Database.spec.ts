@@ -39,7 +39,7 @@ describe('in memory DB operations', () => {
     expect(user).toBeFalsy();
   });
 
-  it('updates object', async () => {
+  it('updates document', async () => {
     const newUser = await UserModel.insert(testUser);
     await UserModel.update({ id: newUser.id }, { username: 'test1' });
 
@@ -51,11 +51,17 @@ describe('in memory DB operations', () => {
   it('can not update id field', async () => {
     const newUser = await UserModel.insert(testUser);
 
-    await UserModel.update({ id: newUser.id }, { id: 'gonna_hack_you' });
+    let result;
+    try {
+      result = await UserModel.update({ id: newUser.id }, { id: 'gonna_hack_you' });
+    } catch (e) {
+      result = e;
+    }
 
     const [user] = await UserModel.find({ id: newUser.id });
 
     expect(user).toBeTruthy();
+    expect(result instanceof Error).toBeTruthy();
   });
 
   it('updates all fields except id', async () => {

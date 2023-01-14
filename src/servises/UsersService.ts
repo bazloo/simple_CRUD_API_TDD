@@ -1,6 +1,9 @@
 import { validate as uuidValidate } from 'uuid';
-
+import { ResponseError } from '../types';
 import UserModel from '../database';
+
+const USER_DOES_NOT_EXIST_MSG = 'User with such id doesn\'t exist';
+const NOT_FOUND = 'NOT_FOUND';
 
 export default class UsersService {
   static async get(req, res) {
@@ -20,7 +23,7 @@ export default class UsersService {
         res.end();
       } else {
         res.statusCode = 404;
-        res.write(JSON.stringify({ message: 'User with such id doesn\'t exist' }));
+        res.write(JSON.stringify({ message: USER_DOES_NOT_EXIST_MSG }));
         res.end();
       }
     } else {
@@ -35,13 +38,11 @@ export default class UsersService {
 
     try {
       newUser = await UserModel.insert(req.body || {});
-    } catch (error) {
-      if (error instanceof Error) {
-        res.statusCode = 400;
-        return res.end(JSON.stringify({ message: error.message }));
-      }
-      res.statusCode = 500;
-      return res.end(JSON.stringify({ message: 'Internal error' }));
+    } catch (e) {
+      const error = e as ResponseError;
+      res.statusCode = error.code === NOT_FOUND ? 404 : 400;
+      const message = error.code === NOT_FOUND ? USER_DOES_NOT_EXIST_MSG : error.message;
+      return res.end(JSON.stringify({ message }));
     }
 
     res.statusCode = 201;
@@ -57,15 +58,14 @@ export default class UsersService {
     }
 
     let updatedUser;
+
     try {
       updatedUser = await UserModel.update({ id: req.params.id }, req.body || {});
-    } catch (error) {
-      if (error instanceof Error) {
-        res.statusCode = 400;
-        return res.end(JSON.stringify({ message: error.message }));
-      }
-      res.statusCode = 500;
-      return res.end(JSON.stringify({ message: 'Internal error' }));
+    } catch (e) {
+      const error = e as ResponseError;
+      res.statusCode = error.code === 'NOT_FOUND' ? 404 : 400;
+      const message = error.code === 'NOT_FOUND' ? USER_DOES_NOT_EXIST_MSG : error.message;
+      return res.end(JSON.stringify({ message }));
     }
 
     res.write(JSON.stringify(updatedUser));
@@ -79,7 +79,17 @@ export default class UsersService {
       return res.end();
     }
 
-    const deletedUser = await UserModel.delete({ id: req.params.id });
+    let deletedUser;
+
+    try {
+      deletedUser = await UserModel.delete({ id: req.params.id });
+    } catch (e) {
+      const error = e as ResponseError;
+      res.statusCode = error.code === 'NOT_FOUND' ? 404 : 400;
+      const message = error.code === 'NOT_FOUND' ? USER_DOES_NOT_EXIST_MSG : error.message;
+      return res.end(JSON.stringify({ message }));
+    }
+
     res.write(JSON.stringify(deletedUser));
     return res.end();
   }

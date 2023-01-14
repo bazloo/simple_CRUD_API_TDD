@@ -31,3 +31,8 @@ type RouteMethods = Record<string, Record<RequestMethods, RequestHandler> | Requ
 export interface Routes extends RouteMethods {
     'notExist': RequestHandler,
 }
+
+export interface ResponseError extends Error {
+    code?: string;
+    message: string;
+}

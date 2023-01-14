@@ -97,11 +97,11 @@ describe('users API', () => {
     });
   });
 
-  it('can not update user when body have\'t required fields', (done) => {
+  it('can not update user when body have\'t invalid fields', (done) => {
     UserModel.insert(testUser).then((user) => {
-      request(server).put(`/api/users/${user.id}`).send({}).then((res) => {
+      request(server).put(`/api/users/${user.id}`).send({ profession: 'worker' }).then((res) => {
         expect(res.status).toBe(400);
-        expect(res.body.message).toEqual('The fields "username", "age", "hobbies" are required!');
+        expect(res.body.message).toEqual('Invalid field type, should be: {"username":"string","age":"number","hobbies":["string"]}');
         done();
       });
     });

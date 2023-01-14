@@ -1,5 +1,5 @@
 export default abstract class SchemaValidator<T> {
-  validateFields(required: Array<keyof T>, schema: T, body: object): [boolean, Error] {
+  validateFields(required: Array<keyof T> | null, schema: T, body: object): [boolean, Error] {
     let result = true;
     let error;
 

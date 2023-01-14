@@ -1,8 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import { BaseDocument } from '../types';
 import SchemaValidator from './SchemaValidator';
-
-// TODO fields type validating
+import { ResponseError } from "../types";
 
 export default class Model<T extends BaseDocument, K extends keyof T> extends SchemaValidator<T> {
   public collectionName: string;
@@ -58,19 +57,27 @@ export default class Model<T extends BaseDocument, K extends keyof T> extends Sc
           .filter((record) => record.id !== object.id);
         resolve(deletedRecord);
       } else {
-        reject(new Error('Document with such id does not exist'));
+        const error: ResponseError = new Error('Document with such id does not exist');
+        error.code = 'NOT_FOUND';
+        reject(error);
       }
     });
   }
 
-  update(query: BaseDocument, newValues: Partial<T>): Promise<T> { // TODO: fix type required
+  update(query: BaseDocument, newValues: Partial<T>): Promise<T> {
     return new Promise((resolve, reject) => {
-      let availableValues; // TODO expand validation
+      let availableValues;
       if (Reflect.has(newValues, 'id')) {
         const { id, ...values } = newValues;
         availableValues = values;
       } else {
         availableValues = newValues;
+      }
+
+      const [isValid, error] = this.validateFields(null, this.collectionSchema.types, newValues); // TODO add second value to generic?
+
+      if (!isValid) {
+        reject(error);
       }
 
       const index = this.store[this.collectionName]
@@ -83,7 +90,9 @@ export default class Model<T extends BaseDocument, K extends keyof T> extends Sc
         );
         resolve(this.store[this.collectionName][index]);
       } else {
-        reject(new Error('Document with such id does not exist'));
+        const error: ResponseError = new Error('Document with such id does not exist');
+        error.code = 'NOT_FOUND';
+        reject(error);
       }
     });
   }
