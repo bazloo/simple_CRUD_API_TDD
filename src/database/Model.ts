@@ -2,10 +2,10 @@ import { v4 as uuid } from 'uuid';
 import { BaseDocument, ResponseError } from '../types';
 import SchemaValidator from './SchemaValidator';
 
-export default class Model<T extends BaseDocument, K extends keyof T> extends SchemaValidator<T> {
+export default class Model<T extends BaseDocument> extends SchemaValidator<T> {
   public collectionName: string;
 
-  private required: Array<K>;
+  private required: Array<string>;
 
   private types: T;
 

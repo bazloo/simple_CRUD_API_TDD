@@ -1,8 +1,8 @@
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 import requestHandler from './controllers/RequestHandler';
-import { UserModel } from './types';
+import { IncomingBody } from './types';
 
-const server = createServer((req: IncomingMessage & { body?: UserModel }, res: ServerResponse) => {
+const server = createServer((req: IncomingMessage & IncomingBody, res: ServerResponse) => {
   requestHandler(req, res)
     .catch((error) => {
       console.error(error);

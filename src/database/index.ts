@@ -11,7 +11,7 @@ export const userFieldsTypes = {
 };
 
 const store = {};
-const UserModel = new Model<UserSchema, keyof UserSchema>('users', {
+const UserModel = new Model<UserSchema>('users', {
   required: userRequired,
   types: userFieldsTypes,
 }, store);

@@ -1,12 +1,12 @@
 import { BaseCollection, BaseDocument } from '../types';
-import Model from "./Model";
+import Model from './Model';
 
 export default class Database {
   store: Record<string, Array<BaseDocument>>;
 
   private collections: Array<string> = [];
 
-  constructor(collections: Model<BaseDocument, keyof BaseDocument>[], store: Record<string, Array<BaseDocument>>) {
+  constructor(collections: Model<BaseDocument>[], store: Record<string, Array<BaseDocument>>) {
     this.store = store;
 
     collections.forEach((oneCollection): void => {

@@ -1,7 +1,6 @@
-import { Routes } from '../types/index';
 import UsersService from '../servises/UsersService';
 
-const routes: Routes = {
+const routes = {
   'api/users': {
     get: (req, res) => UsersService.get(req, res),
     post: (req, res) => UsersService.post(req, res),
@@ -10,7 +9,7 @@ const routes: Routes = {
   },
   notExist: (req, res) => {
     res.statusCode = 404;
-    res.end();
+    res.end(JSON.stringify({ message: 'Does not exist' }));
   },
 };
 
