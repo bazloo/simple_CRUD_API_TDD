@@ -1,3 +1,5 @@
+import { validate as uuidValidate } from 'uuid';
+
 import UserModel from '../database';
 
 export default class UsersService {
@@ -5,9 +7,22 @@ export default class UsersService {
     let users;
 
     if (req.params.id) {
+      if (!uuidValidate(req.params.id)) {
+        res.statusCode = 400;
+        res.write(JSON.stringify({ message: 'Invalid user id' }));
+        return res.end();
+      }
+
       users = await UserModel.find({ id: req.params.id });
-      res.write(JSON.stringify(users));
-      res.end();
+
+      if (users.length) {
+        res.write(JSON.stringify(users));
+        res.end();
+      } else {
+        res.statusCode = 404;
+        res.write(JSON.stringify({ message: 'User with such id doesn\'t exist' }));
+        res.end();
+      }
     } else {
       users = await UserModel.find();
       res.write(JSON.stringify(users));
@@ -16,48 +31,56 @@ export default class UsersService {
   }
 
   static async post(req, res) {
-    // TODO make validation
-
-    if (!req.body) {
-      res.end();
-    }
-
     let newUser;
+
     try {
-      newUser = await UserModel.insert(req.body);
-    } catch (e: any) {
-      res.statusCode = 400;
-      res.end();
+      newUser = await UserModel.insert(req.body || {});
+    } catch (error) {
+      if (error instanceof Error) {
+        res.statusCode = 400;
+        return res.end(JSON.stringify({ message: error.message }));
+      }
+      res.statusCode = 500;
+      return res.end(JSON.stringify({ message: 'Internal error' }));
     }
 
+    res.statusCode = 201;
     res.write(JSON.stringify(newUser));
-    res.end();
+    return res.end();
   }
 
   static async put(req, res) {
-    if (!req.body || !req.params.id) {
-      res.end();
+    if (!uuidValidate(req.params.id)) {
+      res.statusCode = 400;
+      res.write(JSON.stringify({ message: 'Invalid user id' }));
+      return res.end();
     }
 
     let updatedUser;
     try {
-      updatedUser = await UserModel.update({ id: req.params.id }, req.body);
-    } catch (e) {
+      updatedUser = await UserModel.update({ id: req.params.id }, req.body || {});
+    } catch (error) {
+      if (error instanceof Error) {
+        res.statusCode = 400;
+        return res.end(JSON.stringify({ message: error.message }));
+      }
       res.statusCode = 500;
-      res.end();
+      return res.end(JSON.stringify({ message: 'Internal error' }));
     }
 
     res.write(JSON.stringify(updatedUser));
-    res.end();
+    return res.end();
   }
 
   static async delete(req, res) {
-    if (!req.params.id) {
-      res.end();
+    if (!uuidValidate(req.params.id)) {
+      res.statusCode = 400;
+      res.write(JSON.stringify({ message: 'Invalid user id' }));
+      return res.end();
     }
 
     const deletedUser = await UserModel.delete({ id: req.params.id });
     res.write(JSON.stringify(deletedUser));
-    res.end();
+    return res.end();
   }
 }

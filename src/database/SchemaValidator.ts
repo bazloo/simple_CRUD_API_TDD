@@ -5,7 +5,7 @@ export default abstract class SchemaValidator<T> {
 
     if (required && required.length && !this.hasRequiredFields(required, body)) {
       result = false;
-      error = new Error(`The fields ${required.join(', ')} are required!`);
+      error = new Error(`The fields "${required.join('", "')}" are required!`);
     }
 
     if (!this.checkFieldsTypes(body, schema)) {

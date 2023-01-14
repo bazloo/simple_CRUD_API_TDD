@@ -16,7 +16,8 @@ export default function bodyParser(req:IncomingMessage) {
       try {
         body = JSON.parse(Buffer.concat(chunks).toString());
       } catch (error) {
-        reject(error);
+        console.error('Failed to parse body');
+        resolve(undefined);
       }
 
       resolve(body);
