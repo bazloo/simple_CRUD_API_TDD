@@ -1,17 +1,18 @@
 import { v4 as uuid } from 'uuid';
 import { BaseDocument } from '../types';
-import { schemaValidator } from "../utils";
+import SchemaValidator from './SchemaValidator';
 
 // TODO fields type validating
 
-export default class Model<T extends BaseDocument> {
+export default class Model<T extends BaseDocument, K extends keyof T> extends SchemaValidator<T> {
   public collectionName: string;
 
-  private collectionSchema: { required: Array<keyof T>; types: T };
+  private collectionSchema: { required: Array<any>; types: T };
 
   store: Record<string, Array<T>>;
 
   constructor(collectionName: string, collectionSchema, store: Record<string, Array<T>>) {
+    super();
     this.collectionName = collectionName;
     this.collectionSchema = collectionSchema;
     this.store = store;
@@ -21,19 +22,28 @@ export default class Model<T extends BaseDocument> {
 
   async insert(object: T): Promise<T> {
     return new Promise((resolve, reject) => {
-      schemaValidator(this.collectionSchema.required, this.collectionSchema.types, object);
-      object.id = uuid();
-      this.store[this.collectionName].push({ ...object });
-      resolve(object);
+      const [isValid, error] = this.validateFields(this.collectionSchema.required, this.collectionSchema.types, object); // TODO add second value to generic?
+
+      if (!isValid) {
+        reject(error);
+      }
+
+      const documentToSave = { id: uuid(), ...object };
+      this.store[this.collectionName].push(documentToSave);
+      resolve(documentToSave);
     });
   }
 
-  find(query: Partial<T>): Promise<Array<T>> {
+  find(query?: Partial<T> | null): Promise<Array<T>> {
     return new Promise((resolve) => {
-      const queryValues = Object.entries(query);
-      const result = this.store[this.collectionName]
-        .filter((document) => queryValues.every(([key, value]) => document[key] === value));
-      resolve(result);
+      if (query === undefined || query === null) {
+        resolve(this.store[this.collectionName]);
+      } else {
+        const queryValues = Object.entries(query);
+        const result = this.store[this.collectionName]
+          .filter((document) => queryValues.every(([key, value]) => document[key] === value));
+        resolve(result);
+      }
     });
   }
 
@@ -75,12 +85,6 @@ export default class Model<T extends BaseDocument> {
       } else {
         reject(new Error('Document with such id does not exist'));
       }
-    });
-  }
-
-  findAll() {
-    return new Promise((resolve, reject) => {
-      resolve(this.store[this.collectionName]);
     });
   }
 }

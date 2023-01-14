@@ -6,7 +6,7 @@ export default class Database {
 
   private collections: Array<string> = [];
 
-  constructor(collections: Model<BaseDocument>[], store: Record<string, Array<BaseDocument>>) {
+  constructor(collections: Model<BaseDocument, keyof BaseDocument>[], store: Record<string, Array<BaseDocument>>) {
     this.store = store;
 
     collections.forEach((oneCollection): void => {

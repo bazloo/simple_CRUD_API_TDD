@@ -8,7 +8,7 @@ export interface UserModel {
 }
 
 export interface BaseDocument {
- id?: string | number;
+ id?: string;
 }
 
 export interface BaseCollection {

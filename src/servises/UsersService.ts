@@ -9,14 +9,14 @@ export default class UsersService {
       res.write(JSON.stringify(users));
       res.end();
     } else {
-      users = await UserModel.findAll();
+      users = await UserModel.find();
       res.write(JSON.stringify(users));
       res.end();
     }
   }
 
   static async post(req, res) {
-    //TODO make validation
+    // TODO make validation
 
     if (!req.body) {
       res.end();
@@ -25,8 +25,8 @@ export default class UsersService {
     let newUser;
     try {
       newUser = await UserModel.insert(req.body);
-    } catch (e) {
-      res.statusCode = 500;
+    } catch (e: any) {
+      res.statusCode = 400;
       res.end();
     }
 

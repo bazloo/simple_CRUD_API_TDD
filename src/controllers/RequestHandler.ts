@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import url from 'node:url';
 import routes from '../routes';
-import { bodyParser, setDefaultHeaders, schemaValidator } from '../utils';
+import { bodyParser, setDefaultHeaders } from '../utils';
 import { UserModel as UserSchema } from '../types';
 import { userRequired, userFieldsTypes as userSchema } from '../database';
 
@@ -45,13 +45,6 @@ export default async function requestHandler(req: IncomingMessage & { body?: Use
       break;
     case 'post':
       req.body = await bodyParser(req) as UserSchema;
-      try {
-        schemaValidator<UserSchema, typeof userSchema>(userRequired, userSchema, req.body);
-      } catch (e) {
-        console.log(e);
-        res.statusCode = 400;
-        res.end();
-      }
       // @ts-ignore
       routes[possibleRoutes[0]].post(req, res);
       break;

@@ -35,6 +35,13 @@ describe('users API', () => {
     });
   });
 
+  it('could not create user without all required fields', (done) => {
+    request(server).post('/api/users').send({ age: 10 }).then((res) => {
+      expect(res.status).toBe(400);
+      done();
+    });
+  });
+
   it('gets user by id', (done) => {
     UserModel.insert(testUser).then((user) => {
       request(server).get(`/api/users/${user.id}`).send().then((res) => {
@@ -47,7 +54,7 @@ describe('users API', () => {
 
   it('gets not exist user', (done) => {
     UserModel.insert(testUser).then((user) => {
-      request(server).get(`/api/users/${user.id}`).send().then((res) => {
+      request(server).get('/api/users/not-exist').send().then((res) => {
         expect(res.status).toBe(200);
         expect(res.body.length).toBeFalsy();
         done();
@@ -69,11 +76,11 @@ describe('users API', () => {
   });
 
   it('deletes user', (done) => {
-    UserModel.insert(testUser).then((user) => {
-      request(server).delete(`/api/users/${user.id}`).send()
+    UserModel.insert(testUser).then((result) => {
+      request(server).delete(`/api/users/${result.id}`).send()
         .then((res) => {
           expect(res.status).toBe(200);
-          return UserModel.find({ id: user.id });
+          return UserModel.find({ id: result.id });
         })
         .then((user) => {
           expect(user.length).toBeFalsy();

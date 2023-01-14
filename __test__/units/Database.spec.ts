@@ -15,7 +15,6 @@ describe('in memory DB operations', () => {
   it('finds object', async () => {
     const newUser = await UserModel.insert(testUser);
     const [user] = await UserModel.find({ id: newUser.id });
-
     expect(user).toBeTruthy();
     expect(user.id).toBe(newUser.id);
   });
