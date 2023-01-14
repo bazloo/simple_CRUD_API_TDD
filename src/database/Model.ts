@@ -1,19 +1,21 @@
 import { v4 as uuid } from 'uuid';
-import { BaseDocument } from '../types';
+import { BaseDocument, ResponseError } from '../types';
 import SchemaValidator from './SchemaValidator';
-import { ResponseError } from "../types";
 
 export default class Model<T extends BaseDocument, K extends keyof T> extends SchemaValidator<T> {
   public collectionName: string;
 
-  private collectionSchema: { required: Array<any>; types: T };
+  private required: Array<K>;
+
+  private types: T;
 
   store: Record<string, Array<T>>;
 
   constructor(collectionName: string, collectionSchema, store: Record<string, Array<T>>) {
     super();
     this.collectionName = collectionName;
-    this.collectionSchema = collectionSchema;
+    this.required = collectionSchema.required;
+    this.types = collectionSchema.types;
     this.store = store;
 
     this.store[collectionName] = [];
@@ -21,7 +23,7 @@ export default class Model<T extends BaseDocument, K extends keyof T> extends Sc
 
   async insert(object: T): Promise<T> {
     return new Promise((resolve, reject) => {
-      const [isValid, error] = this.validateFields(this.collectionSchema.required, this.collectionSchema.types, object); // TODO add second value to generic?
+      const [isValid, error] = this.validateFields(this.required, this.types, object);
 
       if (!isValid) {
         reject(error);
@@ -74,7 +76,7 @@ export default class Model<T extends BaseDocument, K extends keyof T> extends Sc
         availableValues = newValues;
       }
 
-      const [isValid, error] = this.validateFields(null, this.collectionSchema.types, newValues); // TODO add second value to generic?
+      const [isValid, error] = this.validateFields(null, this.types, newValues);
 
       if (!isValid) {
         reject(error);

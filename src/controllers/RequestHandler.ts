@@ -3,7 +3,6 @@ import url from 'node:url';
 import routes from '../routes';
 import { bodyParser, setDefaultHeaders } from '../utils';
 import { UserModel as UserSchema } from '../types';
-import { userRequired, userFieldsTypes as userSchema } from '../database';
 
 export default async function requestHandler(req: IncomingMessage & { body?: UserSchema; params?: object }, res: ServerResponse) {
   // parse url string
