@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { v4 as uuid } from 'uuid';
-import server from '../../src/server';
+import { server } from '../../src/server';
 import UserModel, { db } from '../../src/database';
 
 const testUser = {
