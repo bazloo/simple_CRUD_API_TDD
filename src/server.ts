@@ -10,4 +10,5 @@ const server = createServer((req: IncomingMessage & IncomingBody, res: ServerRes
       res.end(JSON.stringify({ message: 'Internal error' }));
     });
 });
+
 export = server;
