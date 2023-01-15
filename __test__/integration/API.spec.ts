@@ -131,7 +131,7 @@ describe('users API', () => {
     UserModel.insert(testUser).then((result) => {
       request(server).delete(`/api/users/${result.id}`).send()
         .then((res) => {
-          expect(res.status).toBe(200);
+          expect(res.status).toBe(204);
           return UserModel.find({ id: result.id });
         })
         .then((user) => {

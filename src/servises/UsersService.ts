@@ -90,7 +90,7 @@ export default class UsersService {
       return res.end(JSON.stringify({ message }));
     }
 
-    res.write(JSON.stringify(deletedUser));
+    res.statusCode = 204;
     return res.end();
   }
 }
