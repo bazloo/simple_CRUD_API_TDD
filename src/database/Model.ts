@@ -2,6 +2,8 @@ import { v4 as uuid } from 'uuid';
 import { BaseDocument, ResponseError } from '../types';
 import SchemaValidator from './SchemaValidator';
 
+const DOCUMENT_DOES_NOT_EXIST = 'Document with such id does not exist';
+
 export default class Model<T extends BaseDocument> extends SchemaValidator<T> {
   public collectionName: string;
 
@@ -58,11 +60,11 @@ export default class Model<T extends BaseDocument> extends SchemaValidator<T> {
         this.store[this.collectionName] = this.store[this.collectionName]
           .filter((record) => record.id !== object.id);
         resolve(deletedRecord);
-      } else {
-        const error: ResponseError = new Error('Document with such id does not exist');
-        error.code = 'NOT_FOUND';
-        reject(error);
       }
+
+      const error: ResponseError = new Error(DOCUMENT_DOES_NOT_EXIST);
+      error.code = 'NOT_FOUND';
+      reject(error);
     });
   }
 
@@ -91,11 +93,11 @@ export default class Model<T extends BaseDocument> extends SchemaValidator<T> {
           availableValues,
         );
         resolve(this.store[this.collectionName][index]);
-      } else {
-        const error: ResponseError = new Error('Document with such id does not exist');
-        error.code = 'NOT_FOUND';
-        reject(error);
       }
+
+      const notFoundError: ResponseError = new Error(DOCUMENT_DOES_NOT_EXIST);
+      notFoundError.code = 'NOT_FOUND';
+      reject(notFoundError);
     });
   }
 }
