@@ -12,31 +12,35 @@ const startingPort = Number(process.env.PORT);
 let currentWorkerIndex = 0;
 let worker;
 
-if (cluster.isMaster) {
-  for (let i = 0; i < numCores; +1) {
-    cluster.fork();
-  }
-  // Create a load balancer server
-  const loadBalancer = http.createServer((req, res) => {
+const loadBalancer = http.createServer((req, res) => {
+
+  const proxyReq = http.request({
+    host: 'localhost',
+    port: startingPort + currentWorkerIndex,
+    path: req.url,
+    method: req.method,
+    headers: req.headers,
+  }, (proxyRes) => {
+    proxyRes.pipe(res);
+  });
+  req.pipe(proxyReq);
+  currentWorkerIndex = (currentWorkerIndex + 1) % numCores;
+
+  if (cluster.isPrimary) {
+    for (let i = 0; i < numCores; +1) {
+      cluster.fork();
+    }
+  } else {
+    const server = getServerInstance();
     worker = cluster.workers ? cluster.workers[currentWorkerIndex] : undefined;
-    const proxyReq = http.request({
-      host: 'localhost',
-      port: startingPort + currentWorkerIndex,
-      path: req.url,
-      method: req.method,
-      headers: req.headers,
-    }, (proxyRes) => {
-      proxyRes.pipe(res);
+    server.listen(startingPort + currentWorkerIndex, () => {
+      console.log(`Server listening by worker - ${worker.id}`);
     });
-    req.pipe(proxyReq);
-    currentWorkerIndex = (currentWorkerIndex + 1) % numCores;
-  });
-  loadBalancer.listen(startingPort, () => {
-    console.log(`Load balancer started on: ${startingPort}`);
-  });
-} else {
-  const server = getServerInstance();
-  server.listen(startingPort + currentWorkerIndex, () => {
-    console.log(`Server listening by worker - ${worker.id}`);
-  });
-}
+  }
+});
+
+loadBalancer.listen(startingPort, () => {
+  console.log(`Load balancer started on: ${startingPort}`);
+});
+
+
