@@ -19,9 +19,13 @@ export default class Database {
     });
   }
 
-  public dropCollections() {
-    this.collections.forEach((collection) => {
-      this.store[collection] = [];
-    });
-  } // TODO ?? one or many
+  public dropCollections(collectionName) {
+    if (collectionName) {
+      if (this.store[collectionName]) this.store[collectionName] = [];
+    } else {
+      this.collections.forEach((collection) => {
+        this.store[collection] = [];
+      });
+    }
+  }
 }
