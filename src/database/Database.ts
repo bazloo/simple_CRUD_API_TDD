@@ -19,7 +19,7 @@ export default class Database {
     });
   }
 
-  public dropCollections(collectionName) {
+  public dropCollections(collectionName?: string) {
     if (collectionName) {
       if (this.store[collectionName]) this.store[collectionName] = [];
     } else {
