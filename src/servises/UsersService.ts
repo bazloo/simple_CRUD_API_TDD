@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { validate as uuidValidate } from 'uuid';
 import { ResponseError } from '../types';
 import UserModel from '../database';
@@ -6,6 +7,7 @@ const USER_DOES_NOT_EXIST_MSG = 'User with such id doesn\'t exist';
 const NOT_FOUND = 'NOT_FOUND';
 
 export default class UsersService {
+
   static async get(req, res) {
     let users;
 

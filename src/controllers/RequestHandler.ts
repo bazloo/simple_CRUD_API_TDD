@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { IncomingMessage, ServerResponse } from 'http';
 import routes from '../routes';
 import { bodyParser, setDefaultHeaders, parseUrl } from '../utils';

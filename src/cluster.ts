@@ -1,4 +1,5 @@
 import http from 'http';
+// eslint-disable-next-line import/no-unresolved
 import cluster from 'node:cluster';
 import os from 'os';
 import dotenv from 'dotenv';

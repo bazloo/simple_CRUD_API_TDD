@@ -10,7 +10,9 @@
     "start:prod": "npm run build && npm run start",
     "start:multi": "",
     "clean": "rimraf build",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix"
   },
   "repository": {
     "type": "git",

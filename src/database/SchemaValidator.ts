@@ -1,3 +1,4 @@
+/* eslint-disable */
 export default abstract class SchemaValidator<T> {
   validateFields(required: Array<string> | null, schema: T, body: object): [boolean, Error] {
     let result = true;

@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 import url from 'node:url';
 import routes from '../routes';
 
