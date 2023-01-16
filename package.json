@@ -8,7 +8,7 @@
     "build": "npm run clean && tsc",
     "start:dev": "nodemon",
     "start:prod": "npm run build && npm run start",
-    "start:multi": "",
+    "start:multi": "npm run build && node build/cluster.js",
     "clean": "rimraf build",
     "test": "jest --watchAll",
     "lint": "eslint . --ext .ts",
