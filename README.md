@@ -22,3 +22,4 @@ This is a simple RESTful API built with Node.js that allows for CRUD (Create, Re
     - `npm run clean` : Clean the build folder
     - `npm run test` : run the tests with jest.
 5. You can now send requests to the API at `http://localhost:4000`
+
